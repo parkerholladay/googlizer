@@ -3,9 +3,7 @@
 var search = require('./search'),
 	repository = require('../repositories/search-repository');
 
-var resultsCount,
-	query,
-	searchResults = [];
+var query;
 
 var run = function() {
 	repository.getNextQuery(function(error, queryResult) {
@@ -23,11 +21,10 @@ function handleResponse(error, response) {
 		console.log('Error searching:');
 		console.log(error.error.message);
 	} else {
-		//TODO repo method to save/update query results
-		searchResults.push(response.items);
-		query.resultsCount = response.queries.request[0].totalResults;
-		query.nextIndex = response.queries.nextPage[0].startIndex;
-		
+		query.resultsCount = response.searchInformation.totalResults;
+		query.nextIndex = response.queries.nextPage[0].startIndex;		
+
+		saveSearchResults(query, response.items);
 		updateQueryInfo(query);
 
 		if(query.nextIndex < 10) {
@@ -40,6 +37,14 @@ function updateQueryInfo(query) {
 	repository.updateQuery(query, function(error) {
 		if(error) {
 			console.log('Error updating query info: ' + error);
+		}
+	});
+}
+
+function saveSearchResults(query, results) {
+	repository.updateSearchResults(query, results, function(error) {
+		if(error) {
+			console.log('Error updating search results: ' + error);
 		}
 	});
 }
