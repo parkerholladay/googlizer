@@ -20,7 +20,7 @@ var run = function() {
 function handleResponse(error, response) {
 	if(error) {
 		console.log('Error searching:');
-		console.log(error.error.message);
+		console.log(JSON.stringify(error));
 	} else {
 		query.lastCompletedDate = query.nextIndex === query.totalResults ? new Date() : query.lastCompletedDate;		
 		query.nextIndex = response.queries.nextPage ? response.queries.nextPage[0].startIndex : response.searchInformation.totalResults;
